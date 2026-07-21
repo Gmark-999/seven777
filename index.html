@@ -3,16 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IDM Light Controller</title>
+    <title>Happy Birthday! ✦ Special Gift</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-        body { background-color: #0d0f12; color: #e1e6ed; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .card { background: #161920; border: 1px solid #282d37; border-radius: 20px; padding: 28px; width: 100%; max-width: 380px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
-        .header { text-align: center; margin-bottom: 24px; }
-        .header h1 { font-size: 1.3rem; font-weight: 700; color: #fff; letter-spacing: 1.5px; }
-        .header p { font-size: 0.8rem; color: #f43f5e; font-weight: 600; margin-top: 4px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { 
+            background: #0f1117; 
+            color: #e1e6ed; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 20px;
+            background-image: radial-gradient(circle at 50% 10%, rgba(244, 63, 94, 0.15), transparent 60%);
+        }
 
-        .preview-box { width: 100%; height: 60px; border-radius: 12px; margin-bottom: 24px; border: 1px solid #333846; transition: background-color 0.1s ease, box-shadow 0.1s ease; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+        .container { width: 100%; max-width: 400px; position: relative; }
+
+        /* 卡片外層樣式 */
+        .card { 
+            background: #161920; 
+            border: 1px solid #2a2f3d; 
+            border-radius: 24px; 
+            padding: 32px 24px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 階段 1：生日卡片封面 */
+        .card-cover { text-align: center; }
+        .gift-icon { font-size: 3.5rem; margin-bottom: 16px; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        
+        .title { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: 1px; margin-bottom: 8px; }
+        .subtitle { font-size: 0.85rem; color: #f43f5e; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px; }
+        
+        .letter-content { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px dashed rgba(255, 255, 255, 0.15); 
+            border-radius: 16px; 
+            padding: 20px; 
+            font-size: 0.95rem; 
+            line-height: 1.7; 
+            color: #d1d5db; 
+            text-align: left; 
+            margin-bottom: 28px;
+        }
+
+        /* 階段 2：控燈面板 (預設隱藏) */
+        .control-panel { display: none; opacity: 0; transform: translateY(20px); transition: all 0.5s ease; }
+        .control-panel.active { display: block; opacity: 1; transform: translateY(0); }
+
+        .preview-box { 
+            width: 100%; 
+            height: 50px; 
+            border-radius: 14px; 
+            margin-bottom: 24px; 
+            border: 1px solid #333846; 
+            transition: background-color 0.2s ease, box-shadow 0.2s ease; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-weight: bold; 
+            font-size: 0.85rem; 
+            color: rgba(255,255,255,0.8);
+            letter-spacing: 1px;
+        }
 
         .control-group { margin-bottom: 20px; }
         .label-row { display: flex; justify-content: space-between; font-size: 0.85rem; color: #9ca3af; margin-bottom: 8px; font-weight: 500; }
@@ -20,55 +75,94 @@
 
         input[type=range] { -webkit-appearance: none; width: 100%; height: 8px; border-radius: 4px; background: #262b36; outline: none; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #fff; cursor: pointer; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-
-        /* 色相彩虹滑桿背景 */
         #hueRange { background: linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%); }
 
-        .btn { width: 100%; border: none; border-radius: 12px; padding: 14px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; color: #fff; background: #2563eb; margin-top: 10px; }
+        /* 按鈕樣式 */
+        .btn { 
+            width: 100%; 
+            border: none; 
+            border-radius: 14px; 
+            padding: 16px; 
+            font-weight: 700; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            color: #fff; 
+            background: linear-gradient(135deg, #e11d48, #f43f5e); 
+            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
+        }
         .btn:active { transform: scale(0.98); }
-        .btn-connected { background: #059669; }
+        .btn-connect { background: #2563eb; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); margin-top: 10px; }
+        .btn-connected { background: #059669; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3); }
+        .btn-rainbow { background: linear-gradient(135deg, #8b5cf6, #ec4899); box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3); margin-top: 10px; }
+
         .status { text-align: center; font-size: 0.75rem; color: #6b7280; margin-top: 16px; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="header">
-            <h1>IDM LIGHT HUB</h1>
-            <p>HAPPY BIRTHDAY ✦ EXCLUSIVE CONTROL</p>
-        </div>
+    <div class="container">
+        <div class="card">
+            
+            <!-- 【畫面一】生日卡片內文 -->
+            <div id="cardCover" class="card-cover">
+                <div class="gift-icon">🎁</div>
+                <div class="title">Happy Birthday!</div>
+                <div class="subtitle">✦ 專屬於你的光影禮物 ✦</div>
+                
+                <div class="letter-content">
+                    祝你生日快樂！<br><br>
+                    這是一座為你量身打造的專屬氛圍燈光，點擊下方按鈕解鎖控制台，選擇你今天最喜歡的心情色彩吧！✨
+                </div>
 
-        <!-- 顏色即時預覽區 -->
-        <div id="preview" class="preview-box">PREVIEW</div>
-
-        <!-- 1. 色相滑桿 -->
-        <div class="control-group">
-            <div class="label-row">
-                <span>色相 (Hue)</span>
-                <span id="hueVal" class="value-text">0°</span>
+                <button class="btn" onclick="openGift()">開啟專屬控制台 ➔</button>
             </div>
-            <input type="range" id="hueRange" min="0" max="360" value="0">
-        </div>
 
-        <!-- 2. 亮度滑桿 -->
-        <div class="control-group">
-            <div class="label-row">
-                <span>亮度 (Brightness)</span>
-                <span id="brightVal" class="value-text">80%</span>
+            <!-- 【畫面二】藍牙調光控制台 -->
+            <div id="controlPanel" class="control-panel">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="font-size: 1.2rem; color: #fff;">IDM LIGHT HUB</h2>
+                    <p style="font-size: 0.75rem; color: #9ca3af; margin-top: 2px;">生日專屬 ‧ 藍牙氛圍控制器</p>
+                </div>
+
+                <!-- 顏色即時預覽區 -->
+                <div id="preview" class="preview-box">PREVIEW</div>
+
+                <!-- 1. 色相滑桿 -->
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>色相 (Hue)</span>
+                        <span id="hueVal" class="value-text">0°</span>
+                    </div>
+                    <input type="range" id="hueRange" min="0" max="360" value="0">
+                </div>
+
+                <!-- 2. 亮度滑桿 -->
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>亮度 (Brightness)</span>
+                        <span id="brightVal" class="value-text">80%</span>
+                    </div>
+                    <input type="range" id="brightRange" min="0" max="100" value="80">
+                </div>
+
+                <!-- 3. 速度滑桿 -->
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>頻率 (Speed)</span>
+                        <span id="speedVal" class="value-text">恆亮</span>
+                    </div>
+                    <input type="range" id="speedRange" min="0" max="100" value="0">
+                </div>
+
+                <!-- 生日彩蛋按鈕 -->
+                <button class="btn btn-rainbow" onclick="setRainbow()">🎂 一鍵慶祝彩虹燈效</button>
+                
+                <!-- 藍牙連接按鈕 -->
+                <button id="connectBtn" class="btn btn-connect" onclick="connectBLE()">配對藍牙燈光</button>
+                <div id="statusText" class="status">未連線 (請開啟手機藍牙)</div>
             </div>
-            <input type="range" id="brightRange" min="0" max="100" value="80">
-        </div>
 
-        <!-- 3. 速度滑桿 -->
-        <div class="control-group">
-            <div class="label-row">
-                <span>頻率 (Speed)</span>
-                <span id="speedVal" class="value-text">恆亮</span>
-            </div>
-            <input type="range" id="speedRange" min="0" max="100" value="0">
         </div>
-
-        <button id="connectBtn" class="btn" onclick="connectBLE()">配對藍牙燈光</button>
-        <div id="statusText" class="status">未連線 (請開啟手機藍牙)</div>
     </div>
 
     <script>
@@ -82,6 +176,14 @@
         const speedSlider = document.getElementById('speedRange');
         const previewBox = document.getElementById('preview');
 
+        // 開啟禮物切換動畫
+        function openGift() {
+            document.getElementById('cardCover').style.display = 'none';
+            const panel = document.getElementById('controlPanel');
+            panel.classList.add('active');
+            updateLight();
+        }
+
         // 更新介面預覽與發送指令
         function updateLight() {
             const h = hueSlider.value;
@@ -92,17 +194,27 @@
             document.getElementById('brightVal').innerText = b + '%';
             document.getElementById('speedVal').innerText = (s == 0) ? '恆亮' : (s == 100 ? '極速快閃' : s + ' %');
 
-            // 計算 CSS HSL 顏色預覽
             const cssColor = `hsl(${h}, 100%, ${b / 2}%)`;
             previewBox.style.backgroundColor = cssColor;
-            previewBox.style.boxShadow = `0 0 20px ${cssColor}`;
+            previewBox.style.boxShadow = `0 0 25px ${cssColor}`;
 
-            // 發送藍牙指令到 ESP32
             if (bleCharacteristic) {
-                const payload = `${h},${b},${s}`;
-                const encoder = new TextEncoder();
-                bleCharacteristic.writeValue(encoder.encode(payload)).catch(err => console.log(err));
+                sendBLEData(`${h},${b},${s}`);
             }
+        }
+
+        // 一鍵觸發彩虹慶祝模式 (特製指令 "RAINBOW")
+        function setRainbow() {
+            previewBox.style.background = 'linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f)';
+            previewBox.style.boxShadow = '0 0 25px rgba(236, 72, 153, 0.6)';
+            if (bleCharacteristic) {
+                sendBLEData("RAINBOW");
+            }
+        }
+
+        function sendBLEData(dataString) {
+            const encoder = new TextEncoder();
+            bleCharacteristic.writeValue(encoder.encode(dataString)).catch(err => console.log(err));
         }
 
         hueSlider.addEventListener('input', updateLight);
@@ -123,17 +235,16 @@
                 bleCharacteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
 
                 document.getElementById('connectBtn').innerText = "✓ 藍牙連線成功";
+                document.getElementById('connectBtn').classList.remove('btn-connect');
                 document.getElementById('connectBtn').classList.add('btn-connected');
                 document.getElementById('statusText').innerText = "已成功連接至專屬燈光";
 
-                updateLight(); // 連線成功後同步目前數值
+                updateLight();
             } catch (error) {
                 console.error(error);
                 document.getElementById('statusText').innerText = "連線失敗: " + error.message;
             }
         }
-
-        updateLight(); // 初始化畫面預覽
     </script>
 </body>
 </html>
