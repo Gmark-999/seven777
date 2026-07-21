@@ -3,21 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>生日快樂 爸比！</title>
+    <title>七哥獎盃</title>
     
     <!-- PWA 與應用程式設定 -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ec4899">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="生日快樂 爸比">
+    <meta name="apple-mobile-web-app-title" content="七哥獎盃">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3063/3063822.png">
 
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
-        body { background: #0f1117; color: #e1e6ed; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .card { background: #161920; border: 1px solid #2a2f3d; border-radius: 24px; padding: 28px 20px; width: 100%; max-width: 380px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); text-align: center; }
-        .gift-icon { font-size: 3rem; margin-bottom: 12px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background: #0f1117; color: #e1e6ed; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; overflow-x: hidden; }
+
+        /* --- 1. 禮物盒開場畫面 --- */
+        #giftOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #0f1117;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            cursor: pointer;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        /* 禮物盒圖示與浮動動畫 */
+        .gift-box-icon {
+            font-size: 6rem;
+            user-select: none;
+            animation: float 2.5s ease-in-out infinite;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .gift-box-icon:hover {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        .gift-hint {
+            margin-top: 24px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ec4899;
+            letter-spacing: 2px;
+            animation: pulseText 1.8s infinite;
+        }
+
+        .gift-subhint {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(-3deg); }
+        }
+
+        @keyframes pulseText {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* 拆開時的消失動畫 */
+        #giftOverlay.opened {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        #giftOverlay.opened .gift-box-icon {
+            transform: scale(2.5) rotate(15deg);
+            opacity: 0;
+            transition: transform 0.6s ease, opacity 0.5s ease;
+        }
+
+        /* --- 2. 主卡片內容 --- */
+        .card {
+            background: #161920;
+            border: 1px solid #2a2f3d;
+            border-radius: 24px;
+            padding: 28px 20px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+            transition: opacity 0.6s ease 0.2s, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s;
+        }
+
+        .card.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .gift-header-icon { font-size: 3rem; margin-bottom: 8px; }
         .title { font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
         .subtitle { font-size: 0.8rem; color: #f43f5e; font-weight: 700; letter-spacing: 2px; margin-bottom: 16px; }
         
@@ -27,7 +111,19 @@
         .status-dot.online { background-color: #10b981; box-shadow: 0 0 10px #10b981; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
 
-        .letter { background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.15); border-radius: 14px; padding: 16px; font-size: 0.9rem; line-height: 1.6; color: #d1d5db; text-align: left; margin-bottom: 20px; }
+        /* 祝福卡片留言區 */
+        .letter {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            padding: 16px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #d1d5db;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
         .preview-box { width: 100%; height: 45px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333846; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 0.8rem; color: #fff; transition: all 0.2s; }
         .control-group { margin-bottom: 16px; text-align: left; }
         .label-row { display: flex; justify-content: space-between; font-size: 0.8rem; color: #9ca3af; margin-bottom: 6px; }
@@ -41,9 +137,18 @@
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="gift-icon">🎁</div>
-        <div class="title">生日快樂 爸比！</div>
+
+    <!-- 🎁 1. 禮物盒全螢幕開場 -->
+    <div id="giftOverlay" onclick="openGift()">
+        <div class="gift-box-icon">🎁</div>
+        <div class="gift-hint">點擊拆開七哥的專屬禮物</div>
+        <div class="gift-subhint">Click to Open Your Gift</div>
+    </div>
+
+    <!-- 🏆 2. 主要 App 控制內容 -->
+    <div class="card" id="mainCard">
+        <div class="gift-header-icon">🏆</div>
+        <div class="title">七哥獎盃</div>
         <div class="subtitle">✦ 專屬氛圍燈控制器 ✦</div>
         
         <div class="status-badge">
@@ -51,7 +156,12 @@
             <span id="statusText">未連線</span>
         </div>
 
-        <div class="letter">祝爸比生日快樂！這是為你做的專屬桌面燈光，點擊下方藍牙按鈕連線後，就可以自由調整喜歡的顏色與氛圍囉！✨</div>
+        <!-- 💡 留給七哥的話 -->
+        <div class="letter">
+            祝七哥生日快樂！🎂<br><br>
+            這座獎盃是為你特別製作的專屬桌面氛圍燈。點擊下方的「配對藍牙燈光」按鈕與獎盃連線後，就可以自由調配你喜歡的顏色與呼吸頻率！<br><br>
+            希望這個小禮物能為你的桌面多增添一點儀式感與好心情✨
+        </div>
         
         <button class="btn-connect" onclick="connectBLE()">📡 配對藍牙燈光</button>
 
@@ -79,10 +189,19 @@
 
         let bleCharacteristic = null;
 
+        // 拆禮物點擊動作
+        function openGift() {
+            const overlay = document.getElementById('giftOverlay');
+            const card = document.getElementById('mainCard');
+
+            overlay.classList.add('opened');
+            card.classList.add('show');
+        }
+
         async function connectBLE() {
             try {
                 const device = await navigator.bluetooth.requestDevice({
-                    filters: [{ name: '生日快樂 爸比' }],
+                    filters: [{ name: '七哥獎盃' }],
                     optionalServices: [SERVICE_UUID]
                 });
 
